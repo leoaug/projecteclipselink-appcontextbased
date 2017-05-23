@@ -13,13 +13,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import bossanovadata.model.persistence.dao.GenericDAOImpl;
+import bossanovadata.model.persistence.dao.InterfaceRepository;
 import bossanovadata.model.persistence.query.BOSSAQuery;
 import bossanovadata.util.ObjectUtil;
 
 @Transactional
 @EnableTransactionManagement
 @Configuration
-public class YourJpaRepository  <T extends Serializable> extends GenericDAOImpl<T> {
+public class YourJpaRepository  <T extends Serializable> extends GenericDAOImpl<T> implements InterfaceRepository<T> {
 
 	@PersistenceContext(unitName = "bossanovadata")
 	private EntityManager entityManager;
@@ -32,12 +33,16 @@ public class YourJpaRepository  <T extends Serializable> extends GenericDAOImpl<
 		super.setEntityManager(this.entityManager);
 	}
 
-	public List <T> consultarPorEntidadeList(T entidade) throws Exception {
-		return super.findByEntityList(entidade, initialize());
+	@Override
+	public List<T> findByEntityList(T entity) throws Exception {
+		return super.findByEntityList(entity, initialize());
 	}
-	public T getEntidade(Long id) throws Exception {
+
+	@Override
+	public T getEntity(Long id) throws Exception {
 		return super.getEntity(id, Class.forName(initialize().getCanonicalName()));
 	}
+
 	
 	@SuppressWarnings("unchecked")
 	public BOSSAQuery<T> initialize() throws Exception {
@@ -49,4 +54,6 @@ public class YourJpaRepository  <T extends Serializable> extends GenericDAOImpl<
 			throw e;
 		}
 	}
+
+	
 }
